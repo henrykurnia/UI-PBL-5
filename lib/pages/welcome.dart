@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hydrosee/widgets/button_primary.dart';
+
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
@@ -98,7 +100,7 @@ class WelcomePage extends StatelessWidget {
                       Navigator.pushNamed(context, '/register');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA9BD99), 
+                      backgroundColor: const Color(0xFFA9BD99),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -130,7 +132,7 @@ class WelcomePage extends StatelessWidget {
                 const SizedBox(height: 15),
 
                 // ===== Tombol Masuk =====
-               SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
@@ -155,7 +157,6 @@ class WelcomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-
               ],
             ),
           ),

@@ -1,0 +1,2 @@
+C:/Users/pradi/OneDrive/Documents/GitHub/UI-PBL-5/android/app/.cxx/Debug/44312u44/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/pradi/OneDrive/Documents/GitHub/UI-PBL-5/android/app/.cxx/Debug/44312u44/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "715197041903",
+    "project_id": "hydrosee-projects",
+    "storage_bucket": "hydrosee-projects.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715197041903:android:43b23ebca26aab06fcdf1a",
+        "android_client_info": {
+          "package_name": "com.example.hydrosee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715197041903-1lbihc2cg0d9apqd6vf7akvvn5nre8oh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7JIElrte8khxtHJEA_7D3bIjQwCf49i4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715197041903-1lbihc2cg0d9apqd6vf7akvvn5nre8oh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "715197041903-ro20370civdcrsvkgat3j98vhm5nolje.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.pakcoyApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
