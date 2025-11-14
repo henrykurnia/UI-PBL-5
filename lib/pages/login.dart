@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../screens/login_success.dart';
+import '../screens/login_failed.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -14,7 +16,7 @@ class LoginPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // ===== Logo =====
+             
               Image.asset(
                 'assets/images/logo_1.png',
                 width: 80,
@@ -23,7 +25,7 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // ===== Judul =====
+             
               Text(
                 "Masuk ke Akun",
                 style: GoogleFonts.inter(
@@ -35,7 +37,7 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // ===== Deskripsi =====
+              
               Text(
                 "Pilih masuk menggunakan username dan kode alat\natau menggunakan email Google",
                 textAlign: TextAlign.center,
@@ -48,13 +50,13 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // ===== Input Username =====
+              
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Username",
                   style: GoogleFonts.inter(
-                    color: Color(0xFF7D9B67),
+                    color: const Color(0xFF7D9B67),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -62,31 +64,30 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-             TextField(
-                style: const TextStyle(
-                  fontSize: 14, // 🔹 ukuran teks input lebih kecil
+              const TextField(
+                style: TextStyle(
+                  fontSize: 14,
                   color: Color(0xFF527A34),
                 ),
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.person_outline,
                     color: Color(0xFF275902),
-                    size:
-                        20, // 🔹 ikon juga sedikit diperkecil agar proporsional
+                    size: 20,
                   ),
                   hintText: "Masukkan username...",
-                  hintStyle: const TextStyle(
+                  hintStyle: TextStyle(
                     color: Color(0xFF527A34),
-                    fontSize: 13, // 🔹 teks hint juga lebih kecil
+                    fontSize: 13,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFE9EEE5),
+                  fillColor: Color(0xFFE9EEE5),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12, // 🔹 sedikit dikurangi
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 12,
                     horizontal: 18,
                   ),
                 ),
@@ -100,38 +101,38 @@ class LoginPage extends StatelessWidget {
                 child: Text(
                   "Id Alat",
                   style: GoogleFonts.inter(
-                    color: Color(0xFF7D9B67),
+                    color: const Color(0xFF7D9B67),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
-                style: const TextStyle(
-                  fontSize: 14, // 🔹 ukuran teks input lebih kecil
+
+              const TextField(
+                style: TextStyle(
+                  fontSize: 14,
                   color: Color(0xFF527A34),
                 ),
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(
-                    Icons.person_outline,
+                  prefixIcon: Icon(
+                    Icons.qr_code_2_rounded,
                     color: Color(0xFF275902),
-                    size:
-                        20, // 🔹 ikon juga sedikit diperkecil agar proporsional
+                    size: 20,
                   ),
                   hintText: "Masukkan id alatmu...",
-                  hintStyle: const TextStyle(
+                  hintStyle: TextStyle(
                     color: Color(0xFF527A34),
-                    fontSize: 13, // 🔹 teks hint juga lebih kecil
+                    fontSize: 13,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFE9EEE5),
+                  fillColor: Color(0xFFE9EEE5),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12, // 🔹 sedikit dikurangi
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 12,
                     horizontal: 18,
                   ),
                 ),
@@ -139,12 +140,31 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 35),
 
-              // ===== Tombol Daftar Akun =====
+              // ===== Tombol Masuk =====
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    // simulasi login sukses/gagal
+                    const bool loginBerhasil = true;
+
+                    if (loginBerhasil) {
+                      if (!context.mounted) return;
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => const SuccessLoginPage(),
+                        ),
+                      );
+                    } else {
+                      if (!context.mounted) return;
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => const FailedLoginPage(),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFA9BD99),
@@ -167,7 +187,7 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 25),
 
-              // ===== Garis dan teks "atau" =====
+             
               Row(
                 children: [
                   Expanded(
@@ -187,7 +207,7 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 25),
 
-              // ===== Tombol Masuk dengan Google =====
+            
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

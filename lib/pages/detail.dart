@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/detail_view.dart'; // ✅ Import halaman zoom foto
+import '../screens/detail_view.dart'; 
 
 class DetailDeteksiPage extends StatelessWidget {
   final String imagePath;
@@ -17,7 +17,7 @@ class DetailDeteksiPage extends StatelessWidget {
     required this.waktu,
   });
 
-  // ✅ Logika agar "Tidak Terdeteksi" tidak salah terbaca
+ 
   bool get isDetected =>
       status.toLowerCase().contains('terdeteksi') &&
       !status.toLowerCase().contains('tidak');
@@ -38,7 +38,7 @@ class DetailDeteksiPage extends StatelessWidget {
           ),
         ),
         leading: Container(
-          margin: const EdgeInsets.all(8),
+          margin: const EdgeInsets.all(10),
           decoration: const BoxDecoration(
             color: Color(0xFFD4DECC),
             shape: BoxShape.circle,
@@ -64,13 +64,13 @@ class DetailDeteksiPage extends StatelessWidget {
         ],
       ),
 
-      // ===== BODY =====
+      
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // === Gambar Tanaman (Persegi + bisa zoom saat diklik) ===
+          
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -81,7 +81,7 @@ class DetailDeteksiPage extends StatelessWidget {
                 );
               },
               child: AspectRatio(
-                aspectRatio: 1, // ✅ gambar persegi
+                aspectRatio: 1, 
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
@@ -131,7 +131,7 @@ class DetailDeteksiPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFF275902), // ✅ hijau tua
+                color: const Color(0xFF275902), 
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -160,7 +160,7 @@ class DetailDeteksiPage extends StatelessWidget {
     );
   }
 
-  // ===== Widget Kartu Info (tidak diubah) =====
+ 
   Widget _infoCard(IconData icon, String value, String label) {
     return Expanded(
       child: Container(

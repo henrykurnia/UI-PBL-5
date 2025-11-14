@@ -12,29 +12,39 @@ class PhotoViewPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
+        leadingWidth: 80,
         leading: Container(
-          margin: const EdgeInsets.all(8),
+          margin: const EdgeInsets.all(10),
           decoration: const BoxDecoration(
             color: Color(0xFFE9EEE5),
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: Color(0xFF527A34)),
+            iconSize: 18, 
+            padding: const EdgeInsets.all(8),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Color(0xFF527A34),
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 12),
+            margin: const EdgeInsets.only(right: 10),
             decoration: const BoxDecoration(
               color: Color(0xFFE9EEE5),
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.download, color: Color(0xFF527A34)),
+              iconSize: 18, 
+              padding: const EdgeInsets.all(8),
+              icon: const Icon(
+                Icons.download,
+                color: Color(0xFF527A34),
+              ),
               onPressed: () {
-                // ✅ Tambahkan aksi simpan gambar nanti jika diperlukan
+                
               },
             ),
           ),
@@ -45,7 +55,13 @@ class PhotoViewPage extends StatelessWidget {
           panEnabled: true,
           minScale: 1,
           maxScale: 4,
-          child: Image.asset(imagePath),
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
       ),
     );

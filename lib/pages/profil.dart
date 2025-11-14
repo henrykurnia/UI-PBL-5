@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'edit_profil.dart'; 
+import 'edit_profil.dart';
+import 'perangkat_iot.dart';
 
 class ProfilPage extends StatefulWidget {
   const ProfilPage({super.key});
@@ -90,7 +91,6 @@ class _ProfilPageState extends State<ProfilPage> {
                           icon: Icons.edit_outlined,
                           title: "Edit Profil",
                           onTap: () {
-                            // ✅ Arahkan ke halaman Edit Profil
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -99,11 +99,21 @@ class _ProfilPageState extends State<ProfilPage> {
                             );
                           },
                         ),
-    
                         _buildMenuTile(
                           icon: Icons.sensors_outlined,
                           title: "Perangkat IoT",
-                          onTap: () {},
+                          onTap: () {
+                           
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PerangkatIoTPage(
+                                  perangkatTersedia:
+                                      false, 
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -138,8 +148,10 @@ class _ProfilPageState extends State<ProfilPage> {
                       children: [
                         // Notifikasi toggle
                         ListTile(
-                          leading: const Icon(Icons.notifications_none_rounded,
-                              color: Color(0xFF527A34)),
+                          leading: const Icon(
+                            Icons.notifications_none_rounded,
+                            color: Color(0xFF527A34),
+                          ),
                           title: const Text(
                             "Notifikasi",
                             style: TextStyle(

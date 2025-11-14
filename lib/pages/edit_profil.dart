@@ -15,7 +15,6 @@ class _EditProfilPageState extends State<EditProfilPage> {
   final TextEditingController _usernameController =
       TextEditingController(text: "Alffa");
 
-  // Fungsi untuk memilih gambar dari galeri
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -41,12 +40,12 @@ class _EditProfilPageState extends State<EditProfilPage> {
               width: 36,
               height: 36,
               decoration: const BoxDecoration(
-                color: Color(0xFFE9EEE5), // 🔹 Warna background bulat
+                color: Color(0xFFE9EEE5), 
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.arrow_back_ios_new_rounded,
-                color: Color(0xFF527A34), // 🔹 Warna ikon hijau
+                color: Color(0xFF527A34), 
                 size: 18,
               ),
             ),
@@ -140,7 +139,7 @@ class _EditProfilPageState extends State<EditProfilPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Simpan perubahan di sini
+                  
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Perubahan profil disimpan'),

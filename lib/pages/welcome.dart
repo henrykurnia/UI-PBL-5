@@ -18,29 +18,29 @@ class WelcomePage extends StatelessWidget {
             ),
           ),
 
-          // ===== Gradient hanya di bagian bawah =====
+          
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Color(0xFF275902), // hijau tebal di bawah
-                  Colors.transparent, // transparan ke atas
+                  Color(0xFF275902), 
+                  Colors.transparent,
                 ],
-                stops: [0.0, 0.7], // 70% ke atas mulai transparan
+                stops: [0.0, 0.7], 
               ),
             ),
           ),
 
-          // ===== Konten Tengah =====
+          
           Padding(
             padding: const EdgeInsets.fromLTRB(30, 0, 30, 60),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Logo + Judul
+                
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -138,12 +138,12 @@ class WelcomePage extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          const Color(0xFF527A34), // warna hijau solid
+                          const Color(0xFF527A34), 
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      elevation: 0, // biar tetap rata dan tidak terlalu tinggi
+                      elevation: 0, 
                     ),
                     child: const Text(
                       "Masuk",

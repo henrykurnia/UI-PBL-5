@@ -19,7 +19,6 @@ class _RiwayatPageState extends State<RiwayatPage> {
     "30 Hari yang lalu",
   ];
 
-  // === Data dummy per kategori filter ===
   final List<Map<String, dynamic>> data1Hari = [
     {
       'waktu': 'Hari Ini, 12:00',
@@ -39,8 +38,8 @@ class _RiwayatPageState extends State<RiwayatPage> {
     },
   ];
 
-  final List<Map<String, dynamic>> data7Hari = []; // Kosong
-  final List<Map<String, dynamic>> data30Hari = []; // Kosong
+  final List<Map<String, dynamic>> data7Hari = []; 
+  final List<Map<String, dynamic>> data30Hari = []; 
 
   List<Map<String, dynamic>> get currentData {
     switch (selectedFilter) {
@@ -81,10 +80,8 @@ class _RiwayatPageState extends State<RiwayatPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ===== HEADER DENGAN GAMBAR =====
             Stack(
               children: [
-                // Background
                 Container(
                   height: 225,
                   decoration: const BoxDecoration(
@@ -98,8 +95,6 @@ class _RiwayatPageState extends State<RiwayatPage> {
                     ),
                   ),
                 ),
-
-                // Overlay
                 Container(
                   height: 225,
                   decoration: BoxDecoration(
@@ -110,15 +105,12 @@ class _RiwayatPageState extends State<RiwayatPage> {
                     ),
                   ),
                 ),
-
-                // Konten Header
                 Positioned.fill(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 70, 20, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // === Filter tanggal ===
                         GestureDetector(
                           onTap: _pickDate,
                           child: Container(
@@ -197,8 +189,6 @@ class _RiwayatPageState extends State<RiwayatPage> {
                 ),
               ],
             ),
-
-            // ====== KONTEN SETELAH HEADER ======
             const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -214,8 +204,6 @@ class _RiwayatPageState extends State<RiwayatPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-
-                  // === Daftar Card Deteksi ===
                   if (currentData.isEmpty)
                     const Center(
                       child: Padding(
@@ -253,8 +241,6 @@ class _RiwayatPageState extends State<RiwayatPage> {
       ),
     );
   }
-
- // ===== WIDGET CARD DETEKSI =====
   Widget _buildDeteksiCard({
     required String waktu,
     required String status,

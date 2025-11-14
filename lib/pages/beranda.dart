@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'detail.dart'; // pastikan path ini sesuai letak file detail.dart kamu
+import 'detail.dart'; 
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});

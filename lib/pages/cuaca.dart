@@ -17,7 +17,7 @@ class CuacaPage extends StatelessWidget {
             // ======= BAGIAN HEADER =======
             Stack(
               children: [
-                // background langit (diperpanjang)
+                
                 Container(
                   height: 450,
                   decoration: const BoxDecoration(
@@ -32,7 +32,7 @@ class CuacaPage extends StatelessWidget {
                   ),
                 ),
 
-                // overlay gradasi gelap
+                
                 Container(
                   height: 450,
                   decoration: BoxDecoration(
@@ -93,7 +93,7 @@ class CuacaPage extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Kolom kiri: Suhu
+                                  
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -119,7 +119,7 @@ class CuacaPage extends StatelessWidget {
 
                                   const SizedBox(width: 40),
 
-                                  // Kolom kanan: Kelembapan & Angin
+                                  
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -270,13 +270,10 @@ class CuacaPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final hari = ["Senin", "Selasa", "Rabu", "Kamis"];
 
-                      // warna background card
                       final bool isAktif = index == 0;
                       final Color warnaCard = isAktif
                           ? const Color(0xFF275902)
                           : Color(0xFFE9EEE5);
-
-                      // warna teks menyesuaikan background
                       final Color warnaTeks =
                           isAktif ? Colors.white : Colors.black;
 
