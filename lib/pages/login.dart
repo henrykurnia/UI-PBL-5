@@ -255,7 +255,7 @@ class LoginPage extends StatelessWidget {
                     final userCredential = await authService.signInWithGoogle();
 
                     if (userCredential != null) {
-                      Navigator.pushReplacementNamed(context, '/Home');
+                      Navigator.pushReplacementNamed(context, '/home');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
