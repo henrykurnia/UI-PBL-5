@@ -26,10 +26,10 @@ class _MenuBarWidgetState extends State<MenuBarWidget> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 15), 
       decoration: BoxDecoration(
         color: const Color(0xFF173501),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(1000),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),

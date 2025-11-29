@@ -46,6 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '715197041903',
     projectId: 'hydrosee-projects',
     authDomain: 'hydrosee-projects.firebaseapp.com',
+    databaseURL: 'https://hydrosee-projects-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'hydrosee-projects.firebasestorage.app',
     measurementId: 'G-YG7Z3MYCD2',
   );
@@ -55,6 +56,7 @@ class DefaultFirebaseOptions {
     appId: '1:715197041903:android:43b23ebca26aab06fcdf1a',
     messagingSenderId: '715197041903',
     projectId: 'hydrosee-projects',
+    databaseURL: 'https://hydrosee-projects-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'hydrosee-projects.firebasestorage.app',
   );
 
@@ -63,7 +65,9 @@ class DefaultFirebaseOptions {
     appId: '1:715197041903:ios:2d0fa0024959b2aafcdf1a',
     messagingSenderId: '715197041903',
     projectId: 'hydrosee-projects',
+    databaseURL: 'https://hydrosee-projects-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'hydrosee-projects.firebasestorage.app',
+    androidClientId: '715197041903-gk8uf42cl4po8oh58fdque64bpgj1pk8.apps.googleusercontent.com',
     iosClientId: '715197041903-ro20370civdcrsvkgat3j98vhm5nolje.apps.googleusercontent.com',
     iosBundleId: 'com.example.pakcoyApp',
   );
@@ -73,7 +77,9 @@ class DefaultFirebaseOptions {
     appId: '1:715197041903:ios:2d0fa0024959b2aafcdf1a',
     messagingSenderId: '715197041903',
     projectId: 'hydrosee-projects',
+    databaseURL: 'https://hydrosee-projects-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'hydrosee-projects.firebasestorage.app',
+    androidClientId: '715197041903-gk8uf42cl4po8oh58fdque64bpgj1pk8.apps.googleusercontent.com',
     iosClientId: '715197041903-ro20370civdcrsvkgat3j98vhm5nolje.apps.googleusercontent.com',
     iosBundleId: 'com.example.pakcoyApp',
   );
@@ -84,6 +90,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '715197041903',
     projectId: 'hydrosee-projects',
     authDomain: 'hydrosee-projects.firebaseapp.com',
+    databaseURL: 'https://hydrosee-projects-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'hydrosee-projects.firebasestorage.app',
     measurementId: 'G-8Q7LNWDFPL',
   );
