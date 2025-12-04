@@ -1,6 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'detail.dart'; 
 import 'package:intl/intl.dart';
+
+// theme
+import 'package:hydrosee/theme/colors.dart';
 
 class RiwayatPage extends StatefulWidget {
   const RiwayatPage({super.key});
@@ -14,9 +19,9 @@ class _RiwayatPageState extends State<RiwayatPage> {
   int selectedFilter = 0;
 
   final List<String> filters = [
-    "1 Hari yang lalu",
-    "7 Hari yang lalu",
-    "30 Hari yang lalu",
+    "Semua",
+    "Pagi",
+    "Siang",
   ];
 
   // === Data dummy per kategori filter ===
@@ -114,82 +119,142 @@ class _RiwayatPageState extends State<RiwayatPage> {
                 // Konten Header
                 Positioned.fill(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 70, 20, 0),
+                    padding: EdgeInsets.fromLTRB(20, 70, 20, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // === Filter tanggal ===
                         GestureDetector(
                           onTap: _pickDate,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  formattedDate,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
+                          child: ClipRRect(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 2,
+                                sigmaY: 2,
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 15),
+                                decoration: BoxDecoration(
+                                  color: AppColor.primary_0.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(1000),
+                                  border: Border.all(
+                                    color: AppColor.primary_0.withOpacity(0.5),
+                                    style: BorderStyle.solid,
+                                    width: 0.5,
                                   ),
                                 ),
-                                const Icon(
-                                  Icons.calendar_today,
-                                  color: Colors.white,
-                                  size: 18,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      formattedDate,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
 
-                        const SizedBox(height: 45),
+                        const SizedBox(height: 20),
 
                         // === Tombol Filter Hari ===
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(filters.length, (index) {
-                            final bool active = selectedFilter == index;
-                            return Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedFilter = index;
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    decoration: BoxDecoration(
-                                      color: active
-                                          ? const Color(0xFF275902)
-                                          : Colors.white.withOpacity(0.25),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      filters[index],
-                                      style: TextStyle(
-                                        color: active
-                                            ? Colors.white
-                                            : Colors.white70,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
+                        ClipRRect(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(
+                              sigmaX: 2,
+                              sigmaY: 2,
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColor.primary_0.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(1000),
+                                border: Border.all(
+                                  color: AppColor.primary_0.withOpacity(0.5),
+                                  style: BorderStyle.solid,
+                                  width: 0.5,
                                 ),
                               ),
-                            );
-                          }),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: List.generate(filters.length, (index) {
+                                  final bool active = selectedFilter == index;
+                                  return Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedFilter = index;
+                                        });
+                                      },
+                                      child: active ?
+                                        ClipRRect(
+                                        child: BackdropFilter(
+                                          filter: ImageFilter.blur(
+                                            sigmaX: 2,
+                                            sigmaY: 2,
+                                          ),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 15),
+                                            decoration: BoxDecoration(
+                                              color:  AppColor.primary_0.withOpacity(0.15),
+                                              borderRadius: BorderRadius.circular(1000),
+                                              border: Border.all(
+                                                color: AppColor.primary_0.withOpacity(0.5),
+                                                style: BorderStyle.solid,
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              filters[index],
+                                              style: TextStyle(
+                                                color: AppColor.primary_0,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ) :
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 15),
+                                        decoration: BoxDecoration(
+                                          color:  AppColor.primary_0.withOpacity(0),
+                                          borderRadius: BorderRadius.circular(1000),
+                                          border: Border.all(
+                                            color: AppColor.primary_0.withOpacity(0),
+                                            style: BorderStyle.solid,
+                                            width: 0.5,
+                                          ),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          filters[index],
+                                          style: TextStyle(
+                                            color: AppColor.primary_15,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),

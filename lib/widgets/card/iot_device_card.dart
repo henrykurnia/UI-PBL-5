@@ -9,12 +9,12 @@ import 'package:hydrosee/widgets/button/button_primary.dart';
 
 class IotDeviceCard extends StatefulWidget {
   final String deviceName;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const IotDeviceCard({
     super.key,
     required this.deviceName,
-    required this.onPressed,
+    this.onPressed,
   });
 
   @override

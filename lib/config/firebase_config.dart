@@ -10,5 +10,5 @@ class FirebaseConfig {
   static const String measurementId = "G-YG7Z3MYCD2";
 
   // Backend API URL
-  static const String backendUrl = 'https://jina-brineless-nondissipatedly.ngrok-free.dev';
+  static const String backendUrl = 'http://hydrosee.web.id';
 }

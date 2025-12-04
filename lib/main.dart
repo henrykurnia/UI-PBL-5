@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:floaty_nav_bar/floaty_nav_bar.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
+
+import 'package:custom_quick_alert/custom_quick_alert.dart';
+
 // ===== Import semua halaman =====
 // import 'widgets/menubar.dart';
 import 'pages/beranda.dart';
@@ -31,11 +35,19 @@ import 'services/auth_wrapper.dart';
 // theme
 import 'theme/colors.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  CustomQuickAlert.initialize(navigatorKey);
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Inisialisasi data lokal untuk Bahasa Indonesia ('id')
+  await initializeDateFormatting('id', null);
   
   runApp(const MyApp());
 }
@@ -46,6 +58,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Hidroponik App', // ✅ Nama aplikasi
       theme: ThemeData(
@@ -108,9 +121,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final pages = [
       BerandaPage(),
-      const CuacaPage(),
-      const RiwayatPage(),
-      const ProfilPage(),
+      CuacaPage(),
+      RiwayatPage(),
+      ProfilPage(),
     ];
 
     return Scaffold(  

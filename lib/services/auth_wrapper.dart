@@ -62,9 +62,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final pages = [
       BerandaPage(),
-      const CuacaPage(),
-      const RiwayatPage(),
-      const ProfilPage(),
+      CuacaPage(),
+      RiwayatPage(),
+      ProfilPage(),
     ];
 
     return Scaffold(  

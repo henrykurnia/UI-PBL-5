@@ -5,19 +5,31 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:hydrosee/widgets/button/button_primary.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
+// import 'path/to/constants.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 // package
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:custom_quick_alert/custom_quick_alert.dart';
+
+// services
+import 'package:hydrosee/services/api_service.dart';
 
 // widget
 import 'package:hydrosee/widgets/button/action_button.dart';
 import 'package:hydrosee/widgets/card/iot_device_card.dart';
-import 'package:hydrosee/widgets/card/ioT_loading_card.dart';
+import 'package:hydrosee/widgets/popup/wifiInputDialog.dart';
+// import 'package:hydrosee/widgets/card/ioT_loading_card.dart';
 
 // theme
 import 'package:hydrosee/theme/colors.dart';
 
 // bool bluethootIsOn = false;
+
+// lib/constants.dart
+const String serverUuid = '4fafc201-1fb5-459e-8fcc-c9c9c331914b';
+const String charUuid = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
 
 class AddDevice extends StatefulWidget {
   const AddDevice({super.key});
@@ -34,6 +46,7 @@ class _AddDeviceState extends State<AddDevice> {
 
   bool bluethootIsOn = false;
   bool _autoScanStarted = false;
+  bool isConnecting = false;
 
   StreamSubscription<List<ScanResult>>? _scanSubscription;
 
@@ -185,27 +198,152 @@ class _AddDeviceState extends State<AddDevice> {
   }
 
   Future<void> _connectDevice(ScanResult result) async {
+    // Pastikan tidak ada scanning lagi saat connect
+    if (isScanning) await FlutterBluePlus.stopScan(); 
+
+    // Safety check untuk user login. currentUser bisa bernilai null.
+    final User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: Pengguna belum login.")),
+      );
+      return;
+    }
+    
+    // final String userId = currentUser.uid; 
+    final String deviceId = result.device.remoteId.str; 
+    
+    // Logic penentuan nama perangkat
+    final String deviceName = result.device.platformName.isNotEmpty
+        ? result.device.platformName
+        : result.advertisementData.advName.isNotEmpty
+            ? result.advertisementData.advName
+            : "ESP32-hydrosee";
+
+    if (isConnecting) return;
+    setState(() { isConnecting = true; });
+
+    final Map<String, String>? wifiCredentials = await showDialog<Map<String, String>>(
+        context: context,
+        builder: (context) => WifiInputDialog(
+            // Anda bisa menampilkan nama jaringan yang sudah terdeteksi
+            initialSsid: result.device.name, 
+        ),
+    );
+
+    // Cek jika user membatalkan input
+    if (wifiCredentials == null) {
+        setState(() { isConnecting = false; });
+        return;
+    }
+
+    final String ssid = wifiCredentials['ssid']!;
+    final String password = wifiCredentials['password']!;
+
+    // 1. TAMPILKAN LOADING POPUP (CustomQuickAlert)
+    CustomQuickAlert.loading(
+      title: 'Proses Pendaftaran Alat',
+      message: 'Sedang mencoba menghubungkan dan mendaftarkan $deviceName. Mohon tunggu.',
+      backgroundColor: AppColor.primary_05,
+      borderRadius: 20,
+    );
+
     try {
-      await result.device.connect(
-        timeout: Duration(seconds: 15),
-        license: License.free,
-      );
+        // A. KONEKSI BLUETOOTH
+        await result.device.connect(timeout: Duration(seconds: 15), license: License.free);
+        final services = await result.device.discoverServices(); 
+        
+        await ApiService.registerDevice(
+          deviceId: deviceId, // MAC Address dari BLE
+          deviceName: deviceName,
+        );
+        print("✅ Berhasil registrasi di Server Flask");
+        // ---------------------------------------------------------
+        
+        // --- C. KIRIM KONFIGURASI KE ESP32 VIA BLE (Tetap sama) ---
+        
+        final String pairingPayload = '$ssid|$password|$deviceId';
+        
+        final targetServiceUuid = Guid(serverUuid);
+        final targetCharUuid = Guid(charUuid);
 
-      String deviceName = result.device.platformName.isNotEmpty
-          ? result.device.platformName
-          : result.advertisementData.advName.isNotEmpty
-              ? result.advertisementData.advName
-              : "ESP32";
+        // final services = await result.device.discoverServices();
+        BluetoothCharacteristic? charToWrite;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Terhubung ke $deviceName")),
-      );
+        for (var service in services) {
+            if (service.uuid == targetServiceUuid) {
+                for (var char in service.characteristics) {
+                    if (char.uuid == targetCharUuid) {
+                        charToWrite = char;
+                        break;
+                    }
+                }
+            }
+        }
 
-      Navigator.pop(context);
+        if (charToWrite == null) {
+            throw Exception("Characteristic BLE tidak ditemukan.");
+        }
+        
+        // Tulis Payload
+        final List<int> bytes = pairingPayload.codeUnits;
+        await charToWrite.write(bytes, withoutResponse: false);
+
+        CustomQuickAlert.dismiss();
+        await Future.delayed(Duration(milliseconds: 300));
+        
+        await CustomQuickAlert.success(
+          title: 'Berhasil!',
+          message: 'Perangkat $deviceName berhasil didaftarkan dan dikonfigurasi.',
+          confirmText: 'OK',
+          backgroundColor: AppColor.primary_0,
+          titleColor: AppColor.primary_5,
+          messageColor: AppColor.primary_3,
+          borderRadius: 20,
+          confirmBtnColor: AppColor.primary_4,
+          autoCloseDuration: Duration(seconds: 3),
+        );
+        
+        // E. NAVIGASI
+        await Future.delayed(Duration(seconds: 1));
+        Navigator.pushReplacementNamed(
+            context, 
+            '/device', 
+            arguments: result.device, 
+        );
+
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal menghubungkan: $e")),
+      // String errorMessage = 'Koneksi atau pendaftaran gagal: ${e.toString()}';
+      
+      // if (e.toString().contains("timeout") || e.toString().contains("disconnected")) {
+      //     errorMessage = "Koneksi ke perangkat BLE terputus atau waktu koneksi habis. Coba ulangi.";
+      // } else if (e.toString().contains("Characteristic BLE tidak ditemukan")) {
+      //     errorMessage = "Terjadi kesalahan protokol (UUID). Pastikan ESP32 sudah memulai layanan BLE.";
+      // }
+
+      CustomQuickAlert.dismiss();
+      await Future.delayed(Duration(milliseconds: 300));
+      
+      String errorMessage = 'Koneksi atau pendaftaran gagal: ${e.toString()}';
+      
+      if (e.toString().contains("timeout") || e.toString().contains("disconnected")) {
+        errorMessage = "Koneksi ke perangkat BLE terputus atau waktu koneksi habis. Coba ulangi.";
+      }
+      
+      await CustomQuickAlert.error(
+        title: 'Gagal',
+        message: errorMessage,
+        confirmText: 'Tutup',
+        backgroundColor: AppColor.primary_0,
+        titleColor: AppColor.danger,
+        borderRadius: 20,
       );
+      
+    } finally {
+      // Pastikan isConnecting kembali ke false
+      setState(() {
+        isConnecting = false;
+      });
     }
   }
 
@@ -262,26 +400,20 @@ class _AddDeviceState extends State<AddDevice> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          LoadingAnimationWidget.inkDrop(color: AppColor.primary_5, size: 24),
-                          SizedBox(height: 5,),
+                          LoadingAnimationWidget.inkDrop(
+                              color: AppColor.primary_5, size: 24),
+                          SizedBox(
+                            height: 5,
+                          ),
                           Text(
                             "mendeteksi perangkat...",
                             style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: AppColor.primary_3,
-                              fontWeight: FontWeight.w500
-                            ),
+                                fontSize: 12,
+                                color: AppColor.primary_3,
+                                fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
-                      // Column(
-                      //   children: [
-                      //     IotLoadingCard(),
-                      //     IotLoadingCard(),
-                      //     IotLoadingCard(),
-                      //     IotLoadingCard(),
-                      //   ],
-                      // ),
 
                     // list device
                     ...scanResults.map((r) {
@@ -289,121 +421,127 @@ class _AddDeviceState extends State<AddDevice> {
                         deviceName: r.device.platformName.isNotEmpty
                             ? r.device.platformName
                             : r.advertisementData.advName,
-                        onPressed: () => _connectDevice(r),
+                        // onPressed: () => _connectDevice(r),
+                        onPressed: isConnecting ? null : () => _connectDevice(r),
                       );
                     }).toList(),
                     // BARU: Tampilan jika scanResults kosong dan scanning selesai
                     if (!isScanning && scanResults.isEmpty)
-                      _buildBluetoothOffView(),
+                      _buildNotFoundView(),
                   ],
                 )
-              : Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                      SizedBox(
-                        height: 100,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 20),
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              'assets/ilustrations/iot_not_found.png',
-                              width: 276,
-                              height: 200,
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                            Text(
-                              'Bluethooth Anda Mati',
-                              style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColor.danger,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              'Nyalakan Bluetooth di perangkat anda untuk mendeteksi device IoT ',
-                              style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColor.primary_3),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ButtonPrimary(
-                                  text: 'Nyalakan Bluethooth',
-                                  onPressed: () {
-                                    _requestEnabledBluethoot();
-                                  }),
-                            ),
-                          ],
-                        ),
-                      )
-                    ])
+              : _buildBluetoothOffView()
         ],
       )),
     );
   }
 
-  Widget _buildBluetoothOffView() {
+  Widget _buildNotFoundView(){
     // Isi dengan Container/Column yang menampilkan ilustrasi dan tombol "Nyalakan Bluetooth"
     // Ini adalah widget yang sudah Anda buat, hanya dipindahkan ke fungsi.
     // ... (kode Anda yang menampilkan 'Perangkat Tidak Ditemukan' saat Bluetooth OFF)
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       child: Column(
-      children: [
-        Image.asset(
-          'assets/ilustrations/iot_not_found.png',
-          width: 276,
-          height: 200,
-        ),
-        SizedBox(
-          height: 40,
-        ),
-        Text(
-          'Perangkat Tidak Ditemukan',
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColor.danger,
+        children: [
+          Image.asset(
+            'assets/ilustrations/iot_not_found.png',
+            width: 276,
+            height: 200,
           ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          'Pastikan perangkat Iotmu berjalan dan menyalakan fitur bluethooth',
-          style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppColor.primary_3),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          width: double.infinity,
-          child: ButtonPrimary(
-              text: 'Nyalakan Bluethooth',
-              onPressed: () {
-                _requestEnabledBluethoot();
-              }),
-        ),
-      ],
-    ),
+          SizedBox(
+            height: 40,
+          ),
+          Text(
+            'Perangkat Tidak Ditemukan',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColor.danger,
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Pastikan perangkat Iotmu berjalan dan menyalakan fitur bluethooth',
+            style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColor.primary_3),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          // SizedBox(
+          //   width: double.infinity,
+          //   child: ButtonPrimary(
+          //       text: 'Nyalakan Bluethooth',
+          //       onPressed: () {
+          //         _requestEnabledBluethoot();
+          //       }),
+          // ),
+        ],
+      ),
     );
+  }
+  
+
+  Widget _buildBluetoothOffView() {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+          SizedBox(
+            height: 100,
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 20, vertical: 20),
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/ilustrations/iot_not_found.png',
+                  width: 276,
+                  height: 200,
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                Text(
+                  'Bluethooth Anda Mati',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColor.danger,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Nyalakan Bluetooth di perangkat anda untuk mendeteksi device IoT ',
+                  style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColor.primary_3),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ButtonPrimary(
+                      text: 'Nyalakan Bluethooth',
+                      onPressed: () {
+                        _requestEnabledBluethoot();
+                      }),
+                ),
+              ],
+            ),
+          )
+        ]);
   }
 }
