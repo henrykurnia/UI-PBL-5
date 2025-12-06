@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hydrosee/widgets/button/button_primary.dart';
+
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
@@ -91,71 +93,76 @@ class WelcomePage extends StatelessWidget {
                 const SizedBox(height: 40),
 
                 // ===== Tombol Daftar Akun =====
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/register');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA9BD99), 
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text(
-                      "Daftar Akun",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+                // SizedBox(
+                //   width: double.infinity,
+                //   child: ElevatedButton(
+                //     onPressed: () {
+                //       Navigator.pushNamed(context, '/register');
+                //     },
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: const Color(0xFFA9BD99),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(30),
+                //       ),
+                //       padding: const EdgeInsets.symmetric(vertical: 14),
+                //     ),
+                //     child: const Text(
+                //       "Daftar Akun",
+                //       style: TextStyle(
+                //         color: Colors.white,
+                //         fontSize: 16,
+                //         fontWeight: FontWeight.bold,
+                //       ),
+                //     ),
+                //   ),
+                // ),
 
-                const SizedBox(height: 15),
+                // const SizedBox(height: 15),
 
-                const Center(
-                  child: Text(
-                    "Atau",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
+                // const Center(
+                //   child: Text(
+                //     "Atau",
+                //     style: TextStyle(
+                //       color: Colors.white70,
+                //       fontSize: 13,
+                //     ),
+                //   ),
+                // ),
 
-                const SizedBox(height: 15),
+                // const SizedBox(height: 15),
 
                 // ===== Tombol Masuk =====
-               SizedBox(
+                SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFF527A34), 
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      elevation: 0, 
-                    ),
-                    child: const Text(
-                      "Masuk",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+                  child: ButtonPrimary(
+                      text: 'Lanjutkan',
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      }),
 
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     Navigator.pushNamed(context, '/login');
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor:
+                  //         const Color(0xFF527A34), // warna hijau solid
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(30),
+                  //     ),
+                  //     padding: const EdgeInsets.symmetric(vertical: 14),
+                  //     elevation: 0, // biar tetap rata dan tidak terlalu tinggi
+                  //   ),
+                  //   child: const Text(
+                  //     "Masuk",
+                  //     style: TextStyle(
+                  //       color: Colors.white,
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  // ),
+                ),
               ],
             ),
           ),
