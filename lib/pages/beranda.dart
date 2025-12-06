@@ -17,6 +17,7 @@ import 'package:hydrosee/config/firebase_config.dart';
 // service
 import 'package:hydrosee/services/api_service.dart';
 import 'package:hydrosee/services/auth_service.dart';
+// import 'package:hydrosee/services/location_weather.dart';
 
 // model
 import 'package:hydrosee/models/full_weather_model.dart';
@@ -34,6 +35,7 @@ class BerandaPage extends StatefulWidget {
 
 class _BerandaPageState extends State<BerandaPage> {
   final AuthService _authService = AuthService();
+  // final LocationWeather _locationWeatherService = LocationWeather();
   late Future<UserModel?> _userDataFuture;
 
   FullWeatherModel? weatherData;

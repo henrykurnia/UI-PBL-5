@@ -137,107 +137,130 @@ class _IotDeviceState extends State<IotDevice> {
   // Fungsi baru untuk memeriksa status kesiapan sebelum scan
   // Di dalam class _IotDeviceState
   Future<void> _reconfigureDevice(String deviceId, String deviceName) async {
-    if (isConnecting) return; // ✅ Mencegah klik ganda
-
+    if (isConnecting) return;
     setState(() { isConnecting = true; });
-    // 1. Cek Kesiapan BLE (Izin dan Status Bluetooth)
+
     bool isReady = await _checkPermisionsAndState();
-    if (!isReady) return; 
-
-    // 2. Scan untuk menemukan perangkat
-    // Karena perangkat sudah terdaftar, kita hanya perlu men-scan sekali untuk mendapatkan ScanResult (BLE address).
-
-    // TODO: Tambahkan logic scan singkat di sini untuk mendapatkan ScanResult 
-    // yang cocok dengan deviceId (MAC address).
-
-    // Untuk sementara, mari kita asumsikan Anda sudah mendapatkan `ScanResult result`
-    // dari proses scanning singkat di latar belakang.
-    ScanResult? result; // Dapatkan ini dari hasil scan berdasarkan deviceId
-    
-    // Contoh Scan (Ini harus di-refactor agar efisien)
-    await FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
-    await Future.delayed(Duration(seconds: 5));
-    await FlutterBluePlus.stopScan();
-
-    final tempResults = await FlutterBluePlus.lastScanResults;
-    for (var r in tempResults) {
-      if (r.device.remoteId.str == deviceId) {
-        result = r;
-        break;
-      }
+    if (!isReady) {
+      setState(() { isConnecting = false; });
+      return;
     }
 
-    if (result == null) {
-        CustomQuickAlert.error(
-          title: 'Perangkat Tidak Ditemukan',
-          message: 'Perangkat $deviceName tidak terdeteksi oleh Bluetooth saat ini.',
-          borderRadius: 20,
-        );
-        return;
-    }
-    
-    // 3. Panggil dialog input WiFi
-    final Map<String, String>? wifiCredentials = await showDialog<Map<String, String>>(
-        context: context,
-        builder: (context) => WifiInputDialog(
-          initialSsid: deviceName,
-        ),
+    // ✅ PERBAIKAN: Scan dengan listener yang proper
+    CustomQuickAlert.loading(
+      title: 'Mencari Perangkat',
+      message: 'Memindai Bluetooth...',
     );
 
-    if (wifiCredentials == null) return;
-    
-    final String ssid = wifiCredentials['ssid']!;
-    final String password = wifiCredentials['password']!;
+    ScanResult? result;
+    bool found = false;
 
-    // 4. Proses Koneksi dan Kirim Data Konfigurasi Ulang (Sama seperti di _connectDevice)
-    // Lakukan koneksi dan tulis data BLE di sini.
-    
-    CustomQuickAlert.loading(title: 'Mengirim Konfigurasi...');
+    // Listener untuk hasil scan
+    final scanSub = FlutterBluePlus.scanResults.listen((results) {
+      for (var r in results) {
+        if (r.device.remoteId.str == deviceId) {
+          result = r;
+          found = true;
+        }
+      }
+    });
+
+    // Mulai scan
+    await FlutterBluePlus.startScan(
+      timeout: Duration(seconds: 10),
+      androidUsesFineLocation: true,
+    );
+
+    // Tunggu hingga timeout atau device ditemukan
+    for (int i = 0; i < 20 && !found; i++) {
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+
+    await FlutterBluePlus.stopScan();
+    await scanSub.cancel();
+
+    CustomQuickAlert.dismiss();
+
+    if (result == null) {
+      await CustomQuickAlert.error(
+        title: 'Perangkat Tidak Ditemukan',
+        message: 'Pastikan $deviceName menyala dan Bluetooth aktif.',
+        borderRadius: 20,
+      );
+      setState(() { isConnecting = false; });
+      return;
+    }
+
+    // Lanjut ke dialog WiFi...
+    final wifiCredentials = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (context) => WifiInputDialog(initialSsid: deviceName),
+    );
+
+    if (wifiCredentials == null) {
+      setState(() { isConnecting = false; });
+      return;
+    }
+
+    final ssid = wifiCredentials['ssid']!;
+    final password = wifiCredentials['password']!;
+
+    CustomQuickAlert.loading(
+      title: 'Mengirim Konfigurasi',
+      message: 'Menghubungkan ke $deviceName...',
+    );
+
     try {
-        // Logic A: KONEKSI BLE
-        await result.device.connect(
-            // ✅ TAMBAHKAN INI:
-            license: License.free, 
-            timeout: Duration(seconds: 15)
-        );
-        final services = await result.device.discoverServices();
+      await result!.device.connect(
+        license: License.free,
+        timeout: Duration(seconds: 15),
+      );
 
-        // Logic B: Buat Payload dan Kirim
-        final String reconfigPayload = '$ssid|$password|$deviceId';
-        // ... (Lanjutkan logic menemukan karakteristik dan menulis reconfigPayload) ...
-        final targetServiceUuid = Guid(serverUuid);
-        final targetCharUuid = Guid(charUuid);
+      final services = await result!.device.discoverServices();
+      final reconfigPayload = '$ssid|$password|$deviceId';
 
-        BluetoothCharacteristic? charToWrite;
+      final targetServiceUuid = Guid(serverUuid);
+      final targetCharUuid = Guid(charUuid);
 
-        for (var service in services) {
-            if (service.uuid == targetServiceUuid) {
-                for (var char in service.characteristics) {
-                    if (char.uuid == targetCharUuid) {
-                        charToWrite = char;
-                        break;
-                    }
-                }
+      BluetoothCharacteristic? charToWrite;
+
+      for (var service in services) {
+        if (service.uuid == targetServiceUuid) {
+          for (var char in service.characteristics) {
+            if (char.uuid == targetCharUuid) {
+              charToWrite = char;
+              break;
             }
+          }
         }
+      }
 
-        if (charToWrite == null) {
-            throw Exception("Characteristic BLE tidak ditemukan. Pastikan UUID sudah benar.");
-        }
+      if (charToWrite == null) {
+        throw Exception("Characteristic BLE tidak ditemukan.");
+      }
 
-        // 3. Tulis Payload ke Characteristic
-        final List<int> bytes = reconfigPayload.codeUnits;
-        await charToWrite.write(bytes, withoutResponse: false);
-        
-        CustomQuickAlert.dismiss();
-        CustomQuickAlert.success(title: 'Sukses', message: 'Konfigurasi WiFi $deviceName berhasil diubah.');
+      await charToWrite.write(reconfigPayload.codeUnits, withoutResponse: false);
+      
+      await result!.device.disconnect();
+
+      CustomQuickAlert.dismiss();
+      await CustomQuickAlert.success(
+        title: 'Berhasil',
+        message: 'Konfigurasi WiFi berhasil diperbarui.',
+        autoCloseDuration: Duration(seconds: 2),
+      );
+
     } catch (e) {
-        CustomQuickAlert.dismiss();
-        CustomQuickAlert.error(title: 'Gagal', message: 'Gagal mengirim konfigurasi: $e');
+      CustomQuickAlert.dismiss();
+      await CustomQuickAlert.error(
+        title: 'Gagal',
+        message: 'Gagal mengirim konfigurasi: $e',
+      );
     } finally {
-        // Pastikan diskonek
-        await result.device.disconnect();
-        setState(() { isConnecting = false; });
+      try {
+        await result?.device.disconnect();
+      } catch (_) {}
+      setState(() { isConnecting = false; });
     }
   }
 
